@@ -11,6 +11,8 @@ Game = {}
 
 function Game:load()
   self.jss = Joystick:getJoysticks()
+
+  self:startMatch()
 end
 
 function Game:addPlayer()
@@ -29,16 +31,20 @@ end
 function Game:matchEnded()
 end
 
-function Game:draw()
-  if self.jss[0] then
-    self.jss[0]:draw()
-  end
-end
-
 function Game:update()
   for i = 0, #self.jss do
     if self.jss[i] then
       self.jss[i]:update()
     end
   end
+
+  self.match:update()
+end
+
+function Game:draw()
+  if self.jss[0] then
+    self.jss[0]:draw()
+  end
+
+  self.match:draw()
 end

@@ -11,5 +11,15 @@ function Match:new()
 
   -- Initialize match
 
+  --o.lazo = Lazo:new()
+
   return o
+end
+
+function Match.prototype:update()
+  --self.lazo:update()
+end
+
+function Match.prototype:draw()
+  --self.lazo:draw()
 end
