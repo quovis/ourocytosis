@@ -30,11 +30,15 @@ function Game:matchEnded()
 end
 
 function Game:draw()
-  self.jss[0]:draw()
+  if self.jss[0] then
+    self.jss[0]:draw()
+  end
 end
 
 function Game:update()
   for i = 0, #self.jss do
-    self.jss[i]:update()
+    if self.jss[i] then
+      self.jss[i]:update()
+    end
   end
 end
