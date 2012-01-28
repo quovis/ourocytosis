@@ -13,9 +13,10 @@ function Match:new()
   -- Dynamics
   o.commanderMaxSpeed = 4.0
   o.commanders = {}
+  o.followersCount = 10;
   
   for i = 0, #Game.players do
-    o.commanders[i] = Commander:new(200 * i, 200 * i, love.graphics.newImage('assets/beholder.png'))
+    o.commanders[i] = Commander:new(200 * i, 200 * i, love.graphics.newImage('assets/beholder.png'), o.followersCount, Abilities[i])
   end
   
   --o.lazo = Lazo:new()
