@@ -1,17 +1,22 @@
 Commander = {
-	local x
-	local y
-	local sprite
+	prototype = {},
+	mt = {}
 }
+Commander.mt.__index = Commander.prototype
 
 
 function Commander:new(_x, _y, _sprite)
-	local o = {x = _x, y = _y, sprite = _sprite}
-	setmetatable(o, self)
-	self.__index = self
+	local o = {}
+	setmetatable(o, self.mt)
+	
+	-- initialization
+	o.x, o.y = _x, _y
+	o.sprite = _sprite
+	
 	return o
 end
 
 
 function Commander:draw()
+	-- love.graphics.draw( self._sprite, self._x, self._y, , self._sy, self._ox, oy )
 end
