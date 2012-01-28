@@ -73,46 +73,45 @@ end
 
 
 function love.joystickpressed( joystick, button )
-  if(button == 0) then
-    jss[joystick].buttonA = true
+  if button == 0 then
+    Game.jss[joystick].buttonA = true
   end
 
-  if(button == 1) then
-    jss[joystick].buttonB = true
+  if button == 1 then
+    Game.jss[joystick].buttonB = true
   end
 
-  if(button == 2) then
-    jss[joystick].buttonX = true
+  if button == 2 then
+    Game.jss[joystick].buttonX = true
   end
 
-  if(button == 3) then
-    jss[joystick].buttonY = true
+  if button == 3 then
+    Game.jss[joystick].buttonY = true
   end
 
-  if(button == 7) then
-    jss[joystick].buttonStart = true
+  if button == 7 then
+    Game.jss[joystick].buttonStart = true
   end
 end
 
 function love.joystickreleased( joystick, button )
-  if(button == 0) then
-    jss[joystick].buttonA = false
+  if button == 0 then
+    Game.jss[joystick].buttonA = false
   end
 
-  if(button == 1) then
-    jss[joystick].buttonB = false 
+  if button == 1 then
+    Game.jss[joystick].buttonB = false 
   end
 
-  if(button == 2) then
-    jss[joystick].buttonX = false 
+  if button == 2 then
+    Game.jss[joystick].buttonX = false 
   end
 
-  if(button == 3) then
-    jss[joystick].buttonY =  false
+  if button == 3 then
+    Game.jss[joystick].buttonY =  false
   end
 
-  if(button == 7) then
-    jss[joystick].buttonStart =  false
+  if button == 7 then
+    Game.jss[joystick].buttonStart =  false
   end
 end
-
