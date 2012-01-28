@@ -4,6 +4,7 @@ require "game/player"
 require "game/hud"
 require "game/commander"
 require "game/follower"
+require "game/lazo"
 
 -- The Game object is a singleton
 Game = {}
@@ -16,6 +17,12 @@ function Game:addPlayer()
 end
 
 function Game:startMatch()
+  self.match = Match:new()
+end
+
+-- Returns the current match
+function Game:currentMatch()
+  return self.match
 end
 
 -- Callback invoked by Match when once it ends
