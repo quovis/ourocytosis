@@ -1,0 +1,6 @@
+require "game/joystick"
+require "game/match"
+require "game/player"
+require "game/hud"
+require "game/commander"
+require "game/follower"
