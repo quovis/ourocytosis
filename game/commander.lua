@@ -11,10 +11,22 @@ function Commander:new(x, y, sprite)
 	
 	-- initialization
 	o.x, o.y = x, y
+	o.rotation = 0
 	o.sprite = sprite
+	o.offsetX = sprite:getWidth() / 2
+	o.offsetY = sprite:getHeight() / 2
 	
 	return o
 end
 
-function Commander:draw()
+function Commander.prototype:draw()
+	love.graphics.draw(self.sprite, self.x, self.y, self.rotation, 1, 1, self.offsetX, self.offsetY)
+end
+
+function Commander.prototype:move(xIncrement, yIncrement)
+  
+  self.rotation = math.atan2(xIncrement, -yIncrement)
+
+  self.x = self.x + xIncrement
+  self.y = self.y + yIncrement
 end

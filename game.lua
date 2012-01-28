@@ -1,8 +1,8 @@
 require "game/joystick"
+require "game/commander"
 require "game/match"
 require "game/player"
 require "game/hud"
-require "game/commander"
 require "game/follower"
 require "game/lazo"
 
@@ -10,12 +10,24 @@ require "game/lazo"
 Game = {}
 
 function Game:load()
+  -- Inititalization
   self.jss = Joystick:getJoysticks()
-
+  self.players = {}
+  
+  for i = 0, #self.jss do
+    self:addPlayer()
+  end
+  
+  -- Start Match
   self:startMatch()
 end
 
 function Game:addPlayer()
+  if self.players[0] == nil then
+    self.players[#self.players] = Player:new()
+  else
+    self.players[#self.players + 1] = Player:new()
+  end
 end
 
 function Game:startMatch()
@@ -38,6 +50,7 @@ function Game:update()
     end
   end
 
+  -- Update match
   self.match:update()
 end
 
@@ -46,5 +59,6 @@ function Game:draw()
     self.jss[0]:draw()
   end
 
+    -- Draw match
   self.match:draw()
 end

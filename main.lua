@@ -2,6 +2,8 @@ require "game"
 
 function love.load()
   Game:load()
+  
+  Game:startMatch()
 end
 
 function love.update()
