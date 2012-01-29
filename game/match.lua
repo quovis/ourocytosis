@@ -20,8 +20,8 @@ function Match:new()
   -- Dynamics
   o.commanderMaxSpeed = 4.0
   o.commanders = {}
-
-  o.followersCount = 250;
+  
+  o.followersCount = 100;
   
 	o.followers = {}
 	
@@ -31,7 +31,9 @@ function Match:new()
     -- Create followers
     local ability = Abilities[i]
     for j = 1, o.followersCount do
-      local follower = Follower:new(commander, ability)
+      -- TODO: change this
+      local follower = Follower:new(commander, Abilities[math.random(1,4)])
+      --local follower = Follower:new(commander, ability)
       commander:gainFollower(follower)
       table.insert(o.followers, follower)
     end
@@ -53,25 +55,39 @@ function Match.prototype:update()
   Follower:calculatePartitionsWeightCenters(self.followers)
   
   -- Remove random followers
-  -- if (math.random(0,100) < 20 and #self.commanders[1].followers > 0) then
-    -- local lostFollowers = {1}
-    -- self.commanders[1]:loseFollowers(lostFollowers)
-  -- end
-  
-  -- Update abilities
-  for i = 1, #Game.jss do
-    local js = Game.jss[i]
-    if (js.buttonA) then
-      self.commanders[1]:applyAbility(Abilities[1])
-    else
-      self.commanders[1]:stopAbility(Abilities[1])
-    end
-  end
+  --if (math.random(0,100) < 5 and #self.commanders[1].followers > 0) then
+    --local lostFollowers = {1}
+    --self.commanders[1]:loseFollowers(lostFollowers)
+  --end
   
   -- Update commander
   for i = 1, #self.commanders do
     local commander = self.commanders[i]
     commander:move(Game.jss[i].x * self.commanderMaxSpeed, Game.jss[i].y * self.commanderMaxSpeed)
+    
+    -- Update abilities from joystick
+    local js = Game.jss[i]
+    if (js.buttonA) then
+      self.commanders[i]:applyAbility(Abilities[1])
+    else
+      self.commanders[i]:stopAbility(Abilities[1])
+    end
+    if (js.buttonB) then
+      self.commanders[i]:applyAbility(Abilities[2])
+    else
+      self.commanders[i]:stopAbility(Abilities[2])
+    end
+    if (js.buttonX) then
+      self.commanders[i]:applyAbility(Abilities[3])
+    else
+      self.commanders[i]:stopAbility(Abilities[3])
+    end
+    if (js.buttonY) then
+      self.commanders[i]:applyAbility(Abilities[4])
+    else
+      self.commanders[i]:stopAbility(Abilities[4])
+    end
+    
     commander:update()
     for j = 1, #commander.followers do
       commander.followers[j]:update()
@@ -81,13 +97,18 @@ end
 
 function Match.prototype:draw()
   -- Draw followers
-  for i = 1, #self.followers do
-    self.followers[i]:draw()
-  end
+  --for i = 1, #self.followers do
+    --self.followers[i]:draw()
+  --end
   
   -- Draw commanders
   for i = 1, #self.commanders do
     self.commanders[i]:draw()
+    -- TODO: remove this, for testing abilities
+    local c = self.commanders[i]
+    for j = 1, #c.followers do
+      c.followers[j]:draw()
+    end
   end
   
   -- Draw hud

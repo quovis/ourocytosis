@@ -3,9 +3,9 @@ Commander = {
 	mt = {},
 	
 	-- Constants
-  FastSpeedRrate = 2.5,
-  NormalSpeedRate = 1.5,
-  SlowSpeedRrate = 0.5
+  FastSpeedRate = 2,
+  NormalSpeedRate = 1,
+  SlowSpeedRate = 0.5
 }
 
 Commander.mt.__index = Commander.prototype
@@ -35,17 +35,18 @@ function Commander:new(x, y, sprite, color)
 	o.abilityPoints = {}
   o.abilityPointsUsed = {}
   o.abilityActive = {}
+  o.abilityPointStartTime = {}
   --o.abilityPointDuration = {}
-
+  o.beingRepelled = {}
 	for i = 1, #Abilities do
 	  o.abilityPoints[Abilities[i]] = 0
   	o.abilityPointsUsed[Abilities[i]] = o.abilityPoints[Abilities[i]]
   	o.abilityActive[Abilities[i]] = false
+  	o.abilityPointStartTime[Abilities[i]] = 0
 	end
-
+  
 	-- Speed abilities
-	o.speedRate = self.NormalSpeedRate
-	
+	o.speedRate = Commander.NormalSpeedRate
 	return o
 end
 
@@ -64,10 +65,63 @@ function Commander.prototype:draw()
 end
 
 function Commander.prototype:update()
-  -- Update position
-  self.x = self.x + self.xIncrement
-  self.y = self.y + self.yIncrement
+  -- Update abilities
+  -- reset ability effects
+  self.speedRate = Commander.NormalSpeedRate
 
+  -- apply ability effects if active
+  for i = 1, #Abilities do
+    local ability = Abilities[i]
+    local currentTime = love.timer.getTime()
+  
+    if self.abilityActive[ability] then
+      -- player is trying to use the ability
+      if (currentTime - self.abilityPointStartTime[ability] > AbilityPointDuration) then
+        if self.abilityPointsUsed[ability] < self.abilityPoints[ability] then
+          -- consume one point
+          self.abilityPointsUsed[ability] = self.abilityPointsUsed[ability] + 1
+          -- restart the point timer
+          self.abilityPointStartTime[ability] = currentTime
+        
+          -- TODO: deactivate ability here for optimization
+          self:applyAbility(ability)
+        end
+      else
+        self:applyAbility(ability)
+      end
+    else
+      -- player is not trying to use the ability
+    
+      -- if there are points to be regained and the time has passed
+      if (self.abilityPointsUsed[ability] > 0 and (currentTime - self.abilityPointStartTime[ability] > AbilityPointDuration)) then
+        -- gain one point
+        self.abilityPointsUsed[ability] = self.abilityPointsUsed[ability] - 1
+        -- restart the point timer
+        self.abilityPointStartTime[ability] = currentTime
+      end
+    end
+  end
+  
+  
+  -- Update position
+  -- Repel
+  for i = 0, #self.beingRepelled do
+    local repelDirection = self.beingRepelled[i]
+    if repelDirection then
+      distanceX = self.x - repelDirection.x
+      distanceY = self.y - repelDirection.y
+      if (distanceX < 100 and distanceX > -100) and (distanceY < 100 and distanceY > -100) then
+        self.xIncrement = self.xIncrement + distanceX * 0.05
+        self.yIncrement = self.yIncrement + distanceY * 0.05
+      end
+    end
+  end
+
+  self.beingRepelled = {}
+  
+  self.x = self.x + self.xIncrement * self.speedRate
+  self.y = self.y + self.yIncrement * self.speedRate
+  
   -- Update lasso
   self.lasso:setPosition(self.x, self.y)
   self.lasso:update()
@@ -81,68 +135,70 @@ function Commander.prototype:update()
     -- Create new lasso
     self.lasso = Lasso:new(self.x, self.y, self.color)
   end
-  
-  -- Update abilities
-  -- reset ability effects
-	self.speedRate = self.NormalSpeedRate
-  self.color.red = 0
-  self.color.green = 0
-  self.color.blue = 0
-  self.color.alpha = 255
-  
-  -- apply ability effects if active
-  for i = 1, #Abilities do
-    local ability = Abilities[i]
-    if self.abilityActive[ability] then
-      -- player is trying to use the ability
-      
-      if self.abilityPointsUsed[ability] < self.abilityPoints[ability] then
-        self.abilityPointsUsed[ability] = self.abilityPointsUsed[ability] + 1
-        -- points were consumed
-        -- abilityPointsUsed[ability] = 0
-        -- TODO: deactivate ability here for optimization
-        self:applyAbility(ability)
-      end
-    else
-      -- player is not trying to use the ability
-      
-      if (self.abilityPointsUsed[ability] > 0) then
-        self.abilityPointsUsed[ability] = self.abilityPointsUsed[ability] - 1
-      end
-    end
-  end
+    
 end
 
 function Commander.prototype:gainFollower(follower)
-  self.abilityPoints[follower.ability] = self.abilityPoints[follower.ability] + perFollowerAbilityPoints
+  self.abilityPoints[follower.ability] = self.abilityPoints[follower.ability] + 1
   table.insert(self.followers, follower)
 end
 
---function Commander.prototype:loseFollowers(followerIndices)
---  for i = 1, #followerIndices do
---    local index = followerIndices[i]
---    local ability = self.followers[index].ability
---    self.abilityPoints[ability] = self.abilityPoints[ability] - perFollowerAbilityPoints
---    table.remove(self.followers, index)
---  end
---end
+function Commander.prototype:loseFollowers(followerIndices)
+  for i = 1, #followerIndices do
+    local index = followerIndices[i]
+    local ability = self.followers[index].ability
+    self.abilityPoints[ability] = self.abilityPoints[ability] - 1
+    table.remove(self.followers, index)
+  end
+end
 
 
 -- Abilities
 function Commander.prototype:applyAbility(ability)
+-- If the button was just pressed, reset the timer
+  if (not self.abilityActive[ability]) then
+    self.abilityPointStartTime[ability] = love.timer.getTime()
+  end
+  
   self.abilityActive[ability] = true
   
   -- apply ability effect
-  self.color.red = 255
-  self.color.green = 255
-  self.color.blue = 255
-  self.color.alpha = 255
+  if (ability == 'burst') then
+    self.speedRate = Commander.FastSpeedRate
+  elseif (ability == 'slow') then
+    for i = 1, #Game.match.followers do
+      local follower = Game.match.followers[i]
+      follower:slowed(self.x, self.y)
+    end
+  elseif (ability == 'repel') then
+    for i = 1, #Game.match.commanders do
+      local commander = Game.match.commanders[i]
+      if commander ~= self then
+        commander:repel(self.x, self.y)
+      end
+    end
+  elseif (ability == 'attract') then
+    for i = 1, #Game.match.followers do
+      local follower = Game.match.followers[i]
+      follower:attracted(self.x, self.y)
+    end
+  end
 end
 
 function Commander.prototype:stopAbility(ability)
+  
+  -- If the button was just released, reset the timer
+  if (self.abilityActive[ability]) then
+    self.abilityPointStartTime[ability] = love.timer.getTime()
+  end
+  
   self.abilityActive[ability] = false
 end
 
+
+function Commander.prototype:repel(x, y)
+  table.insert(self.beingRepelled, {x = x, y = y})
+end
 
 --function Commander.prototype:burst()
 

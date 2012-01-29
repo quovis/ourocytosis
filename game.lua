@@ -52,9 +52,9 @@ function Game:update()
 end
 
 function Game:draw()
-  if self.jss[1] then
-    self.jss[1]:draw()
-  end
+  --if self.jss[1] then
+    --self.jss[1]:draw()
+  --end
   
   -- Draw match
   self.match:draw()

@@ -2,7 +2,7 @@ Abilities = {
   "attract",
   "repel",
   "burst",
-  "slow",
+  "slow"
 }
 
-perFollowerAbilityPoints = 1 * 60 -- in frames
+AbilityPointDuration = 0.05 -- in seconds

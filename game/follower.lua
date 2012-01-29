@@ -89,6 +89,8 @@ function Follower:new(commander, ability)
   o.randomVelocityFactor = math.random(1,1000)
   o.commanderDistanceThreshold = math.random(10000, 50000)
   o.partition = { column = 0, row = 0 }
+  o.beingAttracted = {}
+  o.beingSlowed = {}
 	-- Following specifics
 	o.commander = commander
 	return o
@@ -116,6 +118,23 @@ function Follower.prototype:update()
     cXDiff = -( Follower.CommanderRepelFactor * (cXDiff + 0.1) )
     cYDiff = -( Follower.CommanderRepelFactor * (cYDiff + 0.1) )
   end
+
+  -- Attract
+  for i = 0, #self.beingAttracted do
+    local attractDirection = self.beingAttracted[i]
+    if attractDirection then
+      distanceX = self.x - attractDirection.x
+      distanceY = self.y - attractDirection.y
+      if (distanceX < 200 and distanceX > -200) and (distanceY < 200 and distanceY > -200) then
+        self.velocity.x = self.velocity.x + distanceX * 0.01
+        self.velocity.y = self.velocity.y + distanceY * 0.01
+      end
+    end
+  end
+
+  self.beingAttracted = {}
+
+
 
   -- Add commander difference to the velocity
   self.velocity.x = self.velocity.x + cXDiff
@@ -162,3 +181,12 @@ function Follower.prototype:update()
   self.velocity.x = self.velocity.x * Follower.ReductionCoefficient
   self.velocity.y = self.velocity.y * Follower.ReductionCoefficient
 end
+
+function Follower.prototype:attracted(x, y)
+  table.insert(self.beingAttracted, {x = x, y = y})
+end
+
+function Follower.prototype:slowed(x, y)
+  table.insert(self.beingSlowed, {x = x, y = y})
+end
+
