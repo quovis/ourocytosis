@@ -5,10 +5,12 @@ FollowerSprites = {
   slow = love.graphics.newImage('assets/beholder.png'),
 }
 
-
 Follower = {
 	prototype = {},
 	mt = {},
+
+  -- Constants:
+
   ReductionCoefficient = 0.95,
   VelocityCapReduction = 0.97,
   CommanderReductionByFrame = 0.0001,
@@ -16,7 +18,7 @@ Follower = {
   MinimumVelocityModulation = 0.3,
 
   ScreenPartitionCountBySide = 10,
-  screenPartitions = {},
+  screenPartitions = {}
 }
 
 Follower.mt.__index = Follower.prototype
@@ -93,6 +95,7 @@ function Follower:new(commander, ability)
   o.beingSlowed = {}
 	-- Following specifics
 	o.commander = commander
+  
 	return o
 end
 

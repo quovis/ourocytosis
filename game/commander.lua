@@ -10,24 +10,25 @@ Commander = {
 
 Commander.mt.__index = Commander.prototype
 
-
 function Commander:new(x, y, sprite, color)
 	local o = {}
 	setmetatable(o, self.mt)
 	
-	-- Initialization
+	-- Position
 	o.x, o.y = x, y
+  o.dx, o.dy = 0, 0
+
+  -- Sprite info
 	o.rotation = 0
 	o.sprite = sprite
 	o.offsetX = sprite:getWidth() / 2
 	o.offsetY = sprite:getHeight() / 2
 	o.color = color
+
+  -- Followers
 	o.followers = {}
   
-  o.xIncrement = 0
-  o.yIncrement = 0
-  
-  -- Initialize lasso
+  -- Lasso
   o.lasso = Lasso:new(x, y, color)
   
 	-- Abilities
@@ -50,10 +51,9 @@ function Commander:new(x, y, sprite, color)
 	return o
 end
 
-function Commander.prototype:move(xIncrement, yIncrement)
-  self.rotation = math.atan2(xIncrement, -yIncrement)
-  self.xIncrement = xIncrement
-  self.yIncrement = yIncrement
+function Commander.prototype:move(dx, dy)
+  self.rotation = math.atan2(dx, -dy)
+  self.dx, self.dy = dx, dy
 end
 
 function Commander.prototype:draw()
@@ -111,23 +111,42 @@ function Commander.prototype:update()
       distanceX = self.x - repelDirection.x
       distanceY = self.y - repelDirection.y
       if (distanceX < 100 and distanceX > -100) and (distanceY < 100 and distanceY > -100) then
-        self.xIncrement = self.xIncrement + distanceX * 0.05
-        self.yIncrement = self.yIncrement + distanceY * 0.05
+        self.dx = self.dx + distanceX * 0.05
+        self.dy = self.dy + distanceY * 0.05
       end
     end
   end
 
   self.beingRepelled = {}
   
-  self.x = self.x + self.xIncrement * self.speedRate
-  self.y = self.y + self.yIncrement * self.speedRate
+  self.x = self.x + self.dx * self.speedRate
+  self.y = self.y + self.dy * self.speedRate
   
   -- Update lasso
   self.lasso:setPosition(self.x, self.y)
   self.lasso:update()
 
+  -- Check if the lasso was closed
   if self.lasso.closed then
     -- Grab new followers
+    local match = Game:currentMatch()
+
+    for i = 1, #match.commanders do
+      local commander = match.commanders[i]
+
+      -- Avoid grabbing our own followers
+      if commander ~= self then
+        for j = 1, #commander.followers do
+          local follower = commander.followers[j]
+
+          if follower and self.lasso:isInside(follower.x, follower.y) then
+            table.insert(self.followers, follower)
+            table.remove(commander.followers, j)
+            follower.commander = self
+          end
+        end
+      end
+    end
 
     -- Destroy lasso
     self.lasso:destroy()
@@ -135,7 +154,6 @@ function Commander.prototype:update()
     -- Create new lasso
     self.lasso = Lasso:new(self.x, self.y, self.color)
   end
-    
 end
 
 function Commander.prototype:gainFollower(follower)
