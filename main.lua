@@ -12,4 +12,5 @@ end
 
 function love.draw()
   Game:draw()
+  love.graphics.print(love.timer.getFPS(), 800, 600)
 end

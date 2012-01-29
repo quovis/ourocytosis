@@ -21,7 +21,7 @@ function Match:new()
   -- Dynamics
   o.commanderMaxSpeed = 4.0
   o.commanders = {}
-  o.followersCount = 50;
+  o.followersCount = 500;
   
 	o.followers = {}
 	
