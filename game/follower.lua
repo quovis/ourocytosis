@@ -15,6 +15,7 @@ Follower.mt.__index = Follower.prototype
 
 followerRadius = 13
 followerRadiusSquared = followerRadius * followerRadius
+repel = 0.4
 
 
 function Follower:new(commander, ability)
@@ -51,26 +52,28 @@ function Follower.prototype:update()
   local length = math.sqrt(xDiff * xDiff + yDiff * yDiff)
   
   -- Separate from other followers
-  local stepX = (xDiff / length)
-  local stepY = (yDiff / length)
+  self.x = self.x + (xDiff / length)
+  self.y = self.y + (yDiff / length)
   local collision = false
   
-  for i = 0, #self.commander.followers do
+  for i = 1, #self.commander.followers do
     local f = self.commander.followers[i]
     if f ~= self then
-      local fXDiff = self.x + stepX - f.x
-      local fYDiff = self.y + stepY - f.y
+      local fXDiff = self.x - f.x
+      local fYDiff = self.y - f.y
       local fDistanceSquared = fXDiff * fXDiff + fYDiff * fYDiff
       collision = 4 * followerRadiusSquared > fDistanceSquared
-      if collision and fDistanceSquared > 0.01 then
-        local overlappingDistance = 2 * followerRadius - math.sqrt(fDistanceSquared)
-        stepX = stepX * (fXDiff - overlappingDistance)
-        stepY = stepY * (fYDiff - overlappingDistance)
-        break
+      if collision then
+        local distance = math.sqrt(fDistanceSquared)
+        local fXDiffNorm = fXDiff / distance
+        local fYDiffNorm = fYDiff / distance
+        local overlappingDistance = 2 * followerRadius - distance
+        repel = overlappingDistance * 0.3
+        self.x = self.x + fXDiffNorm * repel
+        self.y = self.y + fYDiffNorm * repel
+        f.x = f.x - fXDiffNorm * repel
+        f.y = f.y - fYDiffNorm * repel
       end
     end
   end
-  
-  self.x = self.x + stepX
-  self.y = self.y + stepY
 end

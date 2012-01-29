@@ -16,7 +16,7 @@ Match.mt.__index = Match.prototype
 function Match:new()
   local o = {}
   setmetatable(o, self.mt)
-
+  
   -- Initialize match
   -- Dynamics
   o.commanderMaxSpeed = 4.0
@@ -25,38 +25,63 @@ function Match:new()
   
 	o.followers = {}
 	
-  for i = 0, #Game.players do
+  for i = 1, #Game.players do
     local commander = Commander:new(200 * i, 200 * i, love.graphics.newImage('assets/beholder.png'), CommanderColors[i+1])
     
     o.followers[i] = {}
     -- Create followers
-    local ability = Abilities[i + 1]
-    for j = 0, o.followersCount - 1 do
+    local ability = Abilities[i]
+    for j = 1, o.followersCount do
       o.followers[i][j] = Follower:new(commander, ability)
     end
     
-    commander.followers = o.followers[i]
+    commander:gainFollowers(o.followers[i])
     o.commanders[i] = commander
   end
   
   if Game.test.lasso then
     o.lasso = Lasso:new()
   end
-
+  
+  -- Initialize hud
+  o.hud = Hud:new(o.commanders)
+  
   return o
 end
 
 function Match.prototype:update()
   if Game.test.commander then
-    -- Update commander
-    for i = 0, #self.commanders do
-      self.commanders[i]:move(Game.jss[i].x * self.commanderMaxSpeed, Game.jss[i].y * self.commanderMaxSpeed)
-      for j = 0, #self.followers[i] do
-        self.followers[i][j]:update()
+    
+    -- Remove random followers
+    if (math.random(0,100) < 20 and #self.commanders[1].followers > 0) then
+      local lostFollowers = {1}
+      
+      self.commanders[1]:loseFollowers(lostFollowers)
+    end
+    
+    -- Update abilities
+    for i = 1, #Game.jss do
+      local js = Game.jss[i]
+      if (js.buttonA) then
+        self.commanders[1]:applyAbility(Abilities[1])
+      else
+        self.commanders[1]:stopAbility(Abilities[1])
       end
     end
+    
+    -- Update commander
+    for i = 1, #self.commanders do
+      local commander = self.commanders[i]
+      commander:move(Game.jss[i].x * self.commanderMaxSpeed, Game.jss[i].y * self.commanderMaxSpeed)
+      commander:update()
+      for j = 1, #commander.followers do
+        commander.followers[j]:update()
+      end
+    end
+    
   end
-
+  
+  
   if Game.test.lasso then
     -- Update lasso
     self.lasso:update()
@@ -66,10 +91,11 @@ end
 function Match.prototype:draw()
   if Game.test.commander then
     -- Draw commander
-    for i = 0, #self.commanders do
-      self.commanders[i]:draw()
-      for j = 0, #self.followers[i] do
-        self.followers[i][j]:draw()
+    for i = 1, #self.commanders do
+      local commander = self.commanders[i]
+      commander:draw()
+      for j = 1, #commander.followers do
+        commander.followers[j]:draw()
       end
     end
   end
@@ -78,4 +104,7 @@ function Match.prototype:draw()
     -- Draw lasso
     self.lasso:draw()
   end
+  
+  -- Draw hud
+  self.hud:draw()
 end

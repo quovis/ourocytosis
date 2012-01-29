@@ -32,8 +32,8 @@ function Joystick:getJoysticks()
   local n = love.joystick.getNumJoysticks()
   local jss = {}
 
-  for i = 0, n-1 do
-    jss[i] = Joystick:new(i)
+  for i = 1, n do
+    table.insert(jss, Joystick:new(i - 1))
   end
   
   return jss
