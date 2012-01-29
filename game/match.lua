@@ -1,3 +1,11 @@
+CommanderColors = {
+  {red = 62, green = 105, blue = 184, alpha = 255}, -- blue
+  {red = 209, green = 217, blue = 96, alpha = 255}, -- green
+  {red = 248, green = 208, blue = 25, alpha = 255}, -- yellow
+  {red = 203, green = 91, blue = 45, alpha = 255} -- red
+}
+
+
 Match = {
   prototype = {},
   mt = {}
@@ -13,12 +21,12 @@ function Match:new()
   -- Dynamics
   o.commanderMaxSpeed = 4.0
   o.commanders = {}
-  o.followersCount = 1000;
+  o.followersCount = 50;
   
 	o.followers = {}
 	
   for i = 0, #Game.players do
-    local commander = Commander:new(200 * i, 200 * i, love.graphics.newImage('assets/beholder.png'))
+    local commander = Commander:new(200 * i, 200 * i, love.graphics.newImage('assets/beholder.png'), CommanderColors[i+1])
     
     o.followers[i] = {}
     -- Create followers
