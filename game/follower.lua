@@ -96,7 +96,7 @@ end
 
 function Follower.prototype:draw()
   love.graphics.setColorMode('modulate')
-  love.graphics.setColor(self.commander.color.red, self.commander.color.green, self.commander.color.blue, self.commander.color.alpha )
+  love.graphics.setColor(self.commander.color)
 	love.graphics.draw(self.sprite, self.x, self.y, self.rotation, self.scale, self.scale, self.offsetX * self.scale, self.offsetY * self.scale)
   love.graphics.setColorMode('replace')
 end

@@ -10,11 +10,6 @@ require "game/lasso"
 -- The Game object is a singleton
 Game = {}
 
-Game.test = {
-  commander = true
-  --lasso = true
-}
-
 function Game:load()
   -- Inititalization
   self.jss = Joystick:getJoysticks()

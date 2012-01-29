@@ -1,10 +1,9 @@
 CommanderColors = {
-  {red = 62, green = 105, blue = 184, alpha = 255}, -- blue
-  {red = 209, green = 217, blue = 96, alpha = 255}, -- green
-  {red = 248, green = 208, blue = 25, alpha = 255}, -- yellow
-  {red = 203, green = 91, blue = 45, alpha = 255} -- red
+  { 62, 105, 184, 255 }, -- blue
+  { 209, 217, 96, 255 }, -- green
+  { 248, 208, 25, 255 }, -- yellow
+  { 203, 91, 45, 255 } -- red
 }
-
 
 Match = {
   prototype = {},
@@ -21,13 +20,13 @@ function Match:new()
   -- Dynamics
   o.commanderMaxSpeed = 4.0
   o.commanders = {}
-  o.followersCount = 500;
+
+  o.followersCount = 250;
   
 	o.followers = {}
 
   for i = 0, #Game.players do
-    local commander = Commander:new(200 * i, 200 * i, love.graphics.newImage('assets/beholder.png'), CommanderColors[i+1])
-    
+    local commander = Commander:new(200 * (i + 1), 200 * (i + 1), love.graphics.newImage('assets/beholder.png'), CommanderColors[i+1])
 
     -- Create followers
     local ability = Abilities[i + 1]
@@ -44,48 +43,37 @@ function Match:new()
   -- Create Screen Partitions to handle followers calculations
   Follower:initializePartitions()
 
-  if Game.test.lasso then
-    o.lasso = Lasso:new()
-  end
-
   return o
 end
 
 function Match.prototype:update()
-
   Follower:calculatePartitionsWeightCenters(self.followers)
 
-  if Game.test.commander then
-    -- Update commander
-    for i = 0, #self.commanders do
-      local commander = self.commanders[i]
-      commander:move(Game.jss[i].x * self.commanderMaxSpeed, Game.jss[i].y * self.commanderMaxSpeed)
-      for j = 0, #commander.followers do
-        commander.followers[j]:update()
-      end
-    end
-  end
+  -- Update commander
+  for i = 0, #self.commanders do
+    local commander = self.commanders[i]
 
-  if Game.test.lasso then
-    -- Update lasso
-    self.lasso:update()
+    commander:move(Game.jss[i].x * self.commanderMaxSpeed, Game.jss[i].y * self.commanderMaxSpeed)
+    commander:update()
+
+    for j = 0, #commander.followers do
+      commander.followers[j]:update()
+    end
   end
 end
 
 function Match.prototype:draw()
-  if Game.test.commander then
-    -- Draw commander
-    for i = 0, #self.commanders do
-      local commander = self.commanders[i]
-      commander:draw()
-      for j = 0, #commander.followers do
-        commander.followers[j]:draw()
-      end
+  -- Draw followers
+  for i = 0, #self.commanders do
+    local commander = self.commanders[i]
+    for j = 0, #commander.followers do
+      commander.followers[j]:draw()
     end
   end
 
-  if Game.test.lasso then
-    -- Draw lasso
-    self.lasso:draw()
+  -- Draw commanders
+  for i = 0, #self.commanders do
+    local commander = self.commanders[i]
+    commander:draw()
   end
 end
