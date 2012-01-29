@@ -9,8 +9,9 @@ Match = {
   prototype = {},
   mt = {},
 
-  --MATCH_DURATION = 60 * 5
-  MATCH_DURATION = 10
+  MATCH_DURATION = 60 * 2
+
+  BackgroundMusic = love.audio.newSource( "assets/base.ogg", 'static')
 }
 
 Match.mt.__index = Match.prototype
@@ -53,6 +54,9 @@ function Match:new()
   -- Initialize hud
   o.hud = Hud:new(o.commanders)
   
+  -- Start music
+  Match.BackgroundMusic:setLooping(true)
+  Match.BackgroundMusic:play()
   return o
 end
 
