@@ -1,7 +1,12 @@
 Lasso = {
   -- How often to insert a new segment
   INSERT_SEGMENT_EVERY = 0.025,
-  MAX_LENGTH = 160,
+
+  -- The max length of the lasso
+  MAX_LENGTH = 60,
+
+  -- The width of each segment when drawing
+  MAX_SEGMENT_WIDTH = 10,
 
   prototype = {},
   mt = {}
@@ -9,13 +14,16 @@ Lasso = {
 
 Lasso.mt.__index = Lasso.prototype
 
-function Lasso:new()
+function Lasso:new(x, y, color)
   local o = {}
   setmetatable(o, self.mt)
 
   -- The coordinates for the Lasso head
-  o.x = love.graphics.getWidth() / 2
-  o.y = love.graphics.getHeight() / 2
+  o.xi, o.x = x, x
+  o.yi, o.y = y, y
+
+  -- The lasso color
+  o.color = color
 
   -- The array of segments
   o.segments = {}
@@ -27,6 +35,11 @@ function Lasso:new()
   o.lastSegmentAt = love.timer.getTime()
 
   return o
+end
+
+function Lasso.prototype:setPosition(x, y)
+  self.x = x
+  self.y = y
 end
 
 function Lasso.prototype:update()
@@ -54,18 +67,39 @@ function Lasso.prototype:update()
   end
 
   -- Move Lasso head
-  self.x = self.x + Game.jss[0].x * 4
-  self.y = self.y + Game.jss[0].y * 4
+  --self.x = self.x + Game.jss[0].x * 4
+  --self.y = self.y + Game.jss[0].y * 4
 end
 
 function Lasso.prototype:draw()
   -- Draw each segment
   for i = 1, #self.segments do
-    self.segments[i]:draw()
-  end
+    local s = self.segments[i]
 
-  -- Draw the Lasso head
-  love.graphics.circle('fill', self.x, self.y, 3)
+    local w = Lasso.MAX_SEGMENT_WIDTH * (i / #self.segments)
+
+    -- Thick colored line
+    love.graphics.setLineWidth(w)
+    love.graphics.setColor(self.color[1], self.color[2], self.color[3], 100)
+    love.graphics.line(s.x1, s.y1, s.x2, s.y2)
+
+    -- Thin, white-ish line
+    love.graphics.setLineWidth(w / 2)
+    love.graphics.setColor(255, 255, 255, 100)
+    love.graphics.line(s.x1, s.y1, s.x2, s.y2)
+
+    -- Center, white line
+    love.graphics.setLineWidth(w / 4)
+    love.graphics.setColor(255, 255, 255, 200)
+    love.graphics.line(s.x1, s.y1, s.x2, s.y2)
+
+    -- Reset draw settings
+    --love.graphics.reset()
+  end
+end
+
+function Lasso.prototype:destroy()
+  self:shorten(#self.segments)
 end
 
 function Lasso.prototype:insertSegment()
@@ -75,8 +109,8 @@ function Lasso.prototype:insertSegment()
   if lastSegment then
     x1, y1 = lastSegment.x2, lastSegment.y2
   else
-    x1 = love.graphics.getWidth() / 2
-    y1 = love.graphics.getHeight() / 2
+    x1 = self.xi
+    y1 = self.yi
   end
 
   local newSegment = LassoSegment:new(x1, y1, self.x, self.y)
@@ -122,7 +156,7 @@ function Lasso.prototype:getLastSegment()
 end
 
 function Lasso.prototype:shorten(n)
-  for i = 0, n do
+  for i = 1, n do
     table.remove(self.segments, 1)
   end
 end
@@ -204,9 +238,9 @@ function LassoSegment:new(x1, y1, x2, y2)
   return o
 end
 
-function LassoSegment.prototype:draw()
-  love.graphics.line(self.x1, self.y1, self.x2, self.y2)
-end
+--function LassoSegment.prototype:draw()
+--  love.graphics.line(self.x1, self.y1, self.x2, self.y2)
+--end
 
 -- Returns the coordinates of the segment in a new
 -- object, with x1 always smaller than x2, and
@@ -252,7 +286,7 @@ function LassoSegment.prototype:checkIntersection(other)
     (self.y1 - self.y2) * t2
   ) / d
 
-  if other.x1 == other.x2 then
+  if self.x1 == self.x2 or other.x1 == other.x2 then
     if yi < math.min(self.y1, self.y2) or yi > math.max(self.y1, self.y2) then
       return false
     end

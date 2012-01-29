@@ -23,40 +23,65 @@ function Commander:new(x, y, sprite, color)
 	o.offsetY = sprite:getHeight() / 2
 	o.color = color
 	o.followers = {}
-	
+  
+  o.xIncrement = 0
+  o.yIncrement = 0
+  
+  -- Initialize lasso
+  o.lasso = Lasso:new(x, y, color)
+  
 	-- Abilities
   -- Ability points
 	o.abilityPoints = {}
   o.abilityPointsUsed = {}
   o.abilityActive = {}
   --o.abilityPointDuration = {}
-  
+
 	for i = 1, #Abilities do
 	  o.abilityPoints[Abilities[i]] = 0
   	o.abilityPointsUsed[Abilities[i]] = o.abilityPoints[Abilities[i]]
   	o.abilityActive[Abilities[i]] = false
 	end
-	
+
 	-- Speed abilities
 	o.speedRate = self.NormalSpeedRate
-	
 	
 	return o
 end
 
-
-function Commander.prototype:draw()
-	love.graphics.draw(self.sprite, self.x, self.y, self.rotation, 1, 1, self.offsetX, self.offsetY)
-end
-
 function Commander.prototype:move(xIncrement, yIncrement)
   self.rotation = math.atan2(xIncrement, -yIncrement)
-  
-  self.x = self.x + xIncrement
-  self.y = self.y + yIncrement
+  self.xIncrement = xIncrement
+  self.yIncrement = yIncrement
+end
+
+function Commander.prototype:draw()
+  -- Draw lasso
+  self.lasso:draw()
+
+  -- Draw commander
+	love.graphics.draw(self.sprite, self.x, self.y, self.rotation, 0.25, 0.25, self.offsetX, self.offsetY)
 end
 
 function Commander.prototype:update()
+  -- Update position
+  self.x = self.x + self.xIncrement
+  self.y = self.y + self.yIncrement
+
+  -- Update lasso
+  self.lasso:setPosition(self.x, self.y)
+  self.lasso:update()
+
+  if self.lasso.closed then
+    -- Grab new followers
+
+    -- Destroy lasso
+    self.lasso:destroy()
+
+    -- Create new lasso
+    self.lasso = Lasso:new(self.x, self.y, self.color)
+  end
+  
   -- Update abilities
   -- reset ability effects
 	self.speedRate = self.NormalSpeedRate
@@ -88,22 +113,19 @@ function Commander.prototype:update()
   end
 end
 
-function Commander.prototype:gainFollowers(followers)
-  for i = 1, #followers do
-    local follower = followers[i]
-    self.abilityPoints[follower.ability] = self.abilityPoints[follower.ability] + perFollowerAbilityPoints
-    table.insert(self.followers, follower)
-  end
+function Commander.prototype:gainFollower(follower)
+  self.abilityPoints[follower.ability] = self.abilityPoints[follower.ability] + perFollowerAbilityPoints
+  table.insert(self.followers, follower)
 end
 
-function Commander.prototype:loseFollowers(followerIndices)
-  for i = 1, #followerIndices do
-    local index = followerIndices[i]
-    local ability = self.followers[index].ability
-    self.abilityPoints[ability] = self.abilityPoints[ability] - perFollowerAbilityPoints
-    table.remove(self.followers, index)
-  end
-end
+--function Commander.prototype:loseFollowers(followerIndices)
+--  for i = 1, #followerIndices do
+--    local index = followerIndices[i]
+--    local ability = self.followers[index].ability
+--    self.abilityPoints[ability] = self.abilityPoints[ability] - perFollowerAbilityPoints
+--    table.remove(self.followers, index)
+--  end
+--end
 
 
 -- Abilities

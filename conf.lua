@@ -4,6 +4,7 @@ function love.conf(t)
   t.author = "Francisco Tufró, Pablo del Sel, Matías Paolini, Esteban Rodriguez, Pedro Carbajal"
 
   -- Graphic settings
-  t.screen.width = 800
-  t.screen.height = 600
+  t.screen.width = 1024
+  t.screen.height = 768
+  t.screen.fullscreen = false
 end
