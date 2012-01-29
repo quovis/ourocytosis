@@ -9,7 +9,7 @@ Match = {
   prototype = {},
   mt = {},
 
-  MATCH_DURATION = 60 * 2
+  MATCH_DURATION = 60 * 2,
 
   BackgroundMusic = love.audio.newSource( "assets/base.ogg", 'static')
 }
