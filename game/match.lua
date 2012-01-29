@@ -24,21 +24,26 @@ function Match:new()
   o.followersCount = 500;
   
 	o.followers = {}
-	
+
   for i = 0, #Game.players do
     local commander = Commander:new(200 * i, 200 * i, love.graphics.newImage('assets/beholder.png'), CommanderColors[i+1])
     
-    o.followers[i] = {}
+
     -- Create followers
     local ability = Abilities[i + 1]
+    commander.followers = {}
     for j = 0, o.followersCount - 1 do
-      o.followers[i][j] = Follower:new(commander, ability)
+      local follower = Follower:new(commander, ability) 
+      commander.followers[j] = follower
+      table.insert(o.followers, follower)
     end
     
-    commander.followers = o.followers[i]
     o.commanders[i] = commander
   end
-  
+ 
+  -- Create Screen Partitions to handle followers calculations
+  Follower:initializePartitions()
+
   if Game.test.lasso then
     o.lasso = Lasso:new()
   end
@@ -47,12 +52,16 @@ function Match:new()
 end
 
 function Match.prototype:update()
+
+  Follower:calculatePartitionsWeightCenters(self.followers)
+
   if Game.test.commander then
     -- Update commander
     for i = 0, #self.commanders do
-      self.commanders[i]:move(Game.jss[i].x * self.commanderMaxSpeed, Game.jss[i].y * self.commanderMaxSpeed)
-      for j = 0, #self.followers[i] do
-        self.followers[i][j]:update()
+      local commander = self.commanders[i]
+      commander:move(Game.jss[i].x * self.commanderMaxSpeed, Game.jss[i].y * self.commanderMaxSpeed)
+      for j = 0, #commander.followers do
+        commander.followers[j]:update()
       end
     end
   end
@@ -67,9 +76,10 @@ function Match.prototype:draw()
   if Game.test.commander then
     -- Draw commander
     for i = 0, #self.commanders do
-      self.commanders[i]:draw()
-      for j = 0, #self.followers[i] do
-        self.followers[i][j]:draw()
+      local commander = self.commanders[i]
+      commander:draw()
+      for j = 0, #commander.followers do
+        commander.followers[j]:draw()
       end
     end
   end
