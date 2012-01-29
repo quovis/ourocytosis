@@ -1,8 +1,8 @@
 require "game" 
 
 function love.load()
+  love.graphics.setBackgroundColor(54, 172, 248)
   Game:load()
-  
   Game:startMatch()
 end
 
@@ -12,4 +12,5 @@ end
 
 function love.draw()
   Game:draw()
+  love.graphics.print(love.timer.getFPS(), 800, 600)
 end

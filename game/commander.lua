@@ -5,7 +5,7 @@ Commander = {
 
 Commander.mt.__index = Commander.prototype
 
-function Commander:new(x, y, sprite)
+function Commander:new(x, y, sprite, color, followers)
 	local o = {}
 	setmetatable(o, self.mt)
 	
@@ -15,6 +15,8 @@ function Commander:new(x, y, sprite)
 	o.sprite = sprite
 	o.offsetX = sprite:getWidth() / 2
 	o.offsetY = sprite:getHeight() / 2
+	o.color = color
+	o.followers = nil
 	
 	return o
 end
