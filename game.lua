@@ -4,10 +4,15 @@ require "game/match"
 require "game/player"
 require "game/hud"
 require "game/follower"
-require "game/lazo"
+require "game/lasso"
 
 -- The Game object is a singleton
 Game = {}
+
+Game.test = {
+  --commander = true
+  lasso = true
+}
 
 function Game:load()
   -- Inititalization

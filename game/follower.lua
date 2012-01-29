@@ -22,7 +22,6 @@ function Follower:new(x, y, sprite, player)
 	return o
 end
 
-
 function Follower.prototype:draw()
 	love.graphics.draw(self.sprite, self.x, self.y, self.rotation, 1, 1, self.offsetX, self.offsetY)
 end
