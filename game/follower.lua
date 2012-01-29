@@ -94,9 +94,9 @@ function Follower:new(commander, ability)
 	setmetatable(o, self.mt)
 	
   -- Position
-  --o.x, o.y = math.random(0, love.graphics.getWidth() - 1), math.random(0, love.graphics.getHeight() - 1)
-  o.x = commander.x + math.random(-200, 200)
-  o.y = commander.y + math.random(-200, 200)
+  o.x, o.y = math.random(0, love.graphics.getWidth() - 1), math.random(0, love.graphics.getHeight() - 1)
+  --o.x = commander.x + math.random(-200, 200)
+  --o.y = commander.y + math.random(-200, 200)
 
   -- Commander
 	o.commander = commander
