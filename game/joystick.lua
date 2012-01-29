@@ -15,11 +15,11 @@ end
 
 function Joystick:updateButtons()
   if self.id then
-    self.buttonA = love.joystick.isDown(self.id, 11)
-    self.buttonB = love.joystick.isDown(self.id, 12)
-    self.buttonX = love.joystick.isDown(self.id, 13)
-    self.buttonY = love.joystick.isDown(self.id, 14)
-    self.buttonStart = love.joystick.isDown(self.id, 4)
+    self.buttonA = love.joystick.isDown(self.id, 0)
+    self.buttonB = love.joystick.isDown(self.id, 1)
+    self.buttonX = love.joystick.isDown(self.id, 2)
+    self.buttonY = love.joystick.isDown(self.id, 3)
+    self.buttonStart = love.joystick.isDown(self.id, 7)
   end
 end
 
