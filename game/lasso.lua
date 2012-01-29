@@ -1,4 +1,9 @@
 Lasso = {
+  prototype = {},
+  mt = {},
+
+  -- Constants:
+
   -- How often to insert a new segment
   INSERT_SEGMENT_EVERY = 0.025,
 
@@ -6,10 +11,7 @@ Lasso = {
   MAX_LENGTH = 60,
 
   -- The width of each segment when drawing
-  MAX_SEGMENT_WIDTH = 10,
-
-  prototype = {},
-  mt = {}
+  MAX_SEGMENT_WIDTH = 10
 }
 
 Lasso.mt.__index = Lasso.prototype
@@ -58,17 +60,7 @@ function Lasso.prototype:update()
     if #self.segments > Lasso.MAX_LENGTH then
       self:shorten(1)
     end
-  else
-    if self:isInside(self.x, self.y) then
-      love.graphics.setColor(255, 0, 0)
-    else
-      love.graphics.setColor(255, 255, 255)
-    end
   end
-
-  -- Move Lasso head
-  --self.x = self.x + Game.jss[0].x * 4
-  --self.y = self.y + Game.jss[0].y * 4
 end
 
 function Lasso.prototype:draw()

@@ -10,24 +10,25 @@ Commander = {
 
 Commander.mt.__index = Commander.prototype
 
-
 function Commander:new(x, y, sprite, color)
 	local o = {}
 	setmetatable(o, self.mt)
 	
-	-- Initialization
+	-- Position
 	o.x, o.y = x, y
+  o.dx, o.dy = 0, 0
+
+  -- Sprite info
 	o.rotation = 0
 	o.sprite = sprite
 	o.offsetX = sprite:getWidth() / 2
 	o.offsetY = sprite:getHeight() / 2
 	o.color = color
+
+  -- Followers
 	o.followers = {}
   
-  o.xIncrement = 0
-  o.yIncrement = 0
-  
-  -- Initialize lasso
+  -- Lasso
   o.lasso = Lasso:new(x, y, color)
   
 	-- Abilities
@@ -49,10 +50,9 @@ function Commander:new(x, y, sprite, color)
 	return o
 end
 
-function Commander.prototype:move(xIncrement, yIncrement)
-  self.rotation = math.atan2(xIncrement, -yIncrement)
-  self.xIncrement = xIncrement
-  self.yIncrement = yIncrement
+function Commander.prototype:move(dx, dy)
+  self.rotation = math.atan2(dx, -dy)
+  self.dx, self.dy = dx, dy
 end
 
 function Commander.prototype:draw()
@@ -65,15 +65,34 @@ end
 
 function Commander.prototype:update()
   -- Update position
-  self.x = self.x + self.xIncrement
-  self.y = self.y + self.yIncrement
+  self.x = self.x + self.dx
+  self.y = self.y + self.dy
 
   -- Update lasso
   self.lasso:setPosition(self.x, self.y)
   self.lasso:update()
 
+  -- Check if the lasso was closed
   if self.lasso.closed then
     -- Grab new followers
+    local match = Game:currentMatch()
+
+    for i = 1, #match.commanders do
+      local commander = match.commanders[i]
+
+      -- Avoid grabbing our own followers
+      if commander ~= self then
+        for j = 1, #commander.followers do
+          local follower = commander.followers[j]
+
+          if follower and self.lasso:isInside(follower.x, follower.y) then
+            table.insert(self.followers, follower)
+            table.remove(commander.followers, j)
+            follower.commander = self
+          end
+        end
+      end
+    end
 
     -- Destroy lasso
     self.lasso:destroy()
