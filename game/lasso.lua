@@ -5,7 +5,7 @@ Lasso = {
   -- Constants:
 
   -- How often to insert a new segment
-  INSERT_SEGMENT_EVERY = 0.025,
+  INSERT_SEGMENT_EVERY = 0.05,
 
   -- The max length of the lasso
   MAX_LENGTH = 60,
@@ -69,6 +69,8 @@ function Lasso.prototype:draw()
     local s = self.segments[i]
 
     local w = Lasso.MAX_SEGMENT_WIDTH * (i / #self.segments)
+
+    love.graphics.setColorMode('modulate')
 
     -- Thick colored line
     love.graphics.setLineWidth(w)

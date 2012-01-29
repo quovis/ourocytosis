@@ -7,7 +7,10 @@ CommanderColors = {
 
 Match = {
   prototype = {},
-  mt = {}
+  mt = {},
+
+  --MATCH_DURATION = 60 * 5
+  MATCH_DURATION = 10
 }
 
 Match.mt.__index = Match.prototype
@@ -15,6 +18,10 @@ Match.mt.__index = Match.prototype
 function Match:new()
   local o = {}
   setmetatable(o, self.mt)
+
+  -- Time
+  o.timeRemaining = Match.MATCH_DURATION
+  o.finished = false
   
   -- Initialize match
   -- Dynamics
@@ -50,6 +57,14 @@ function Match:new()
 end
 
 function Match.prototype:update()
+  self.timeRemaining = self.timeRemaining - love.timer.getDelta()
+
+  if self.timeRemaining <= 0 then
+    self.timeRemaining = 0
+    self.finished = true
+    return
+  end
+  
   Follower:calculatePartitionsWeightCenters(self.followers)
   
   -- Remove random followers

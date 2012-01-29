@@ -51,8 +51,10 @@ function Commander:new(x, y, sprite, color)
 end
 
 function Commander.prototype:move(dx, dy)
-  self.rotation = math.atan2(dx, -dy)
-  self.dx, self.dy = dx, dy
+  --if dx > 0.2 or dx < -0.2 or dy > 0.2 and dy < -0.2 then
+    self.rotation = math.atan2(dx, -dy)
+    self.dx, self.dy = dx, dy
+  --end
 end
 
 function Commander.prototype:draw()
@@ -60,6 +62,7 @@ function Commander.prototype:draw()
   self.lasso:draw()
 
   -- Draw commander
+  love.graphics.setColorMode('replace')
 	love.graphics.draw(self.sprite, self.x, self.y, self.rotation, 0.25, 0.25, self.offsetX, self.offsetY)
 end
 
