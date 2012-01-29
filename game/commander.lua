@@ -63,8 +63,11 @@ function Commander.prototype:draw()
   self.lasso:draw()
 
   -- Draw commander
-  love.graphics.setColorMode('replace')
+  love.graphics.setColorMode('modulate')
+  love.graphics.setColor(self.color)
 	love.graphics.draw(self.sprite, self.x, self.y, self.rotation, 0.25, 0.25, self.offsetX, self.offsetY)
+	love.graphics.setColorMode('replace')
+  
 end
 
 function Commander.prototype:update()
