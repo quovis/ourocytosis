@@ -24,7 +24,7 @@ function Commander.prototype:draw()
 end
 
 function Commander.prototype:move(xIncrement, yIncrement)
-  
+
   self.rotation = math.atan2(xIncrement, -yIncrement)
 
   self.x = self.x + xIncrement

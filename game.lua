@@ -1,5 +1,6 @@
 require "game/joystick"
 require "game/commander"
+require "game/abilities"
 require "game/match"
 require "game/player"
 require "game/hud"
@@ -10,8 +11,8 @@ require "game/lasso"
 Game = {}
 
 Game.test = {
-  --commander = true
-  lasso = true
+  commander = true
+  --lasso = true
 }
 
 function Game:load()

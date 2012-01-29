@@ -13,8 +13,19 @@ function Joystick:updateAxes()
   end
 end
 
+function Joystick:updateButtons()
+  if self.id then
+    self.buttonA = love.joystick.isDown(self.id, 11)
+    self.buttonB = love.joystick.isDown(self.id, 12)
+    self.buttonX = love.joystick.isDown(self.id, 13)
+    self.buttonY = love.joystick.isDown(self.id, 14)
+    self.buttonStart = love.joystick.isDown(self.id, 4)
+  end
+end
+
 function Joystick:update()
   self:updateAxes()
+  self:updateButtons()
 end
 
 function Joystick:getJoysticks()
@@ -68,50 +79,5 @@ function Joystick:draw()
     love.graphics.print("pressed", 100, 70)
   else
     love.graphics.print("released", 100, 70)
-  end
-end
-
-
-function love.joystickpressed( joystick, button )
-  if button == 0 then
-    Game.jss[joystick].buttonA = true
-  end
-
-  if button == 1 then
-    Game.jss[joystick].buttonB = true
-  end
-
-  if button == 2 then
-    Game.jss[joystick].buttonX = true
-  end
-
-  if button == 3 then
-    Game.jss[joystick].buttonY = true
-  end
-
-  if button == 7 then
-    Game.jss[joystick].buttonStart = true
-  end
-end
-
-function love.joystickreleased( joystick, button )
-  if button == 0 then
-    Game.jss[joystick].buttonA = false
-  end
-
-  if button == 1 then
-    Game.jss[joystick].buttonB = false 
-  end
-
-  if button == 2 then
-    Game.jss[joystick].buttonX = false 
-  end
-
-  if button == 3 then
-    Game.jss[joystick].buttonY =  false
-  end
-
-  if button == 7 then
-    Game.jss[joystick].buttonStart =  false
   end
 end
