@@ -65,7 +65,7 @@ function Lasso.prototype:draw()
   end
 
   -- Draw the Lasso head
-  love.graphics.circle('fill', self.x, self.y, 3)
+  love.graphics.circle('fill', self.x, self.y, 5)
 end
 
 function Lasso.prototype:insertSegment()
@@ -252,7 +252,7 @@ function LassoSegment.prototype:checkIntersection(other)
     (self.y1 - self.y2) * t2
   ) / d
 
-  if other.x1 == other.x2 then
+  if self.x1 == self.x2 or other.x1 == other.x2 then
     if yi < math.min(self.y1, self.y2) or yi > math.max(self.y1, self.y2) then
       return false
     end
