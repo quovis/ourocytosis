@@ -36,7 +36,6 @@ function Follower:new(commander, ability)
 	return o
 end
 
-
 function Follower.prototype:draw()
   love.graphics.setColorMode('modulate')
   love.graphics.setColor(self.commander.color.red, self.commander.color.green, self.commander.color.blue, self.commander.color.alpha )
