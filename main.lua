@@ -12,5 +12,5 @@ end
 
 function love.draw()
   Game:draw()
-  love.graphics.print(love.timer.getFPS(), 800, 600)
+  love.graphics.print(love.timer.getFPS(), love.graphics.getWidth() - 30, 10)
 end

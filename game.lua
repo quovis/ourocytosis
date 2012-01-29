@@ -41,21 +41,21 @@ function Game:matchEnded()
 end
 
 function Game:update()
-  for i = 1, #self.jss do
-    if self.jss[i] then
-      self.jss[i]:update()
+  if self.match.finished then
+    --print("Match finished!")
+  else
+    for i = 1, #self.jss do
+      if self.jss[i] then
+        self.jss[i]:update()
+      end
     end
+    
+    -- Update match
+    self.match:update()
   end
-  
-  -- Update match
-  self.match:update()
 end
 
 function Game:draw()
-  --if self.jss[1] then
-    --self.jss[1]:draw()
-  --end
-  
   -- Draw match
   self.match:draw()
 end
